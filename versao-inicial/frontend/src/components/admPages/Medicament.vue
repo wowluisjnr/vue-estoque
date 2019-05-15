@@ -36,20 +36,20 @@ export default {
             unidades:[
                 {value: 'CP', text: 'Comprimido - CP'},
                 {value: 'FR', text: 'Frasco -FR'},
-                {value: 'GTS', text: ' Gota - GTSs'},
+                {value: 'GTS', text: ' Gota - GTS'},
                 {value: 'AMP', text: 'Ampola - AMP'}
             ],
             medicamentos:[
-                {id:1, name: 'Losartana 50mg', und: 'CP', estMin: 960},
-                {id:2, name: 'Losartana 25mg', und: 'CP', estMin: 1000},
-                {id:3, name: 'Anlodipino 5mg', und: 'CP', estMin: 500},
-                {id:4, name: 'Ibuprofeno', und: 'GTS', estMin: 40}
+                {id:1, name: 'Losartana 50mg', und: 'CP', minStock: 960},
+                {id:2, name: 'Losartana 25mg', und: 'CP', minStock: 1000},
+                {id:3, name: 'Anlodipino 5mg', und: 'CP', minStock: 500},
+                {id:4, name: 'Ibuprofeno', und: 'GTS', minStock: 40}
             ],
             fields: [
                 { key: 'id', label: 'Código', sortable: true },
                 { key: 'name', label: 'Medicamento', sortable: true },
                 { key: 'und', label: 'Unidade', sortable: true },
-                { key: 'estMin', label: 'Estoque Minimo'},
+                { key: 'minStock', label: 'Estoque Minimo'},
                 { key: 'actions', label: 'Ações' }
             ]
         }

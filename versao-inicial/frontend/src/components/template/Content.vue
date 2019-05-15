@@ -19,8 +19,7 @@ export default {
 </script>
 
 <style>
-.content {
-        
+.content {        
         background-color: #efefef;
         padding: 20px;
     }

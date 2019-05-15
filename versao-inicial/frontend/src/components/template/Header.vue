@@ -8,7 +8,7 @@
             <b-collapse id="nav-collapse" is-nav>
 
             <b-navbar-nav>
-                <b-nav-item href="/">Estoque Atual</b-nav-item>
+                <b-nav-item href="/">Estoque Atual</b-nav-item>                
                 <b-nav-item-dropdown text="Gerenciar Sistema" right>
                 <b-dropdown-item href="#">Gerenciar Usuarios</b-dropdown-item>
                 <b-dropdown-item href="/medicament">Gerenciar Medicamentos</b-dropdown-item>

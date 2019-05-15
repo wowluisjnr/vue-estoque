@@ -28,12 +28,15 @@ export default {
 		margin: 0;
 	}
 
-	#app{
+	#app {
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 
 		height: 100vh;
 		
+	}
+	.content {
+		height: 100vh;
 	}
 
 
