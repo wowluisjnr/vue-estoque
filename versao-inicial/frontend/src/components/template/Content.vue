@@ -1,13 +1,13 @@
 <template>
-<div class="content">
-    <div class="container">
-  		<div class="row justify-content-center">
-			<div class="col-10">
+
+    <b-container>    
+        <b-row class="justify-content-center">
+            <b-col md="10">
                 <router-view></router-view>
-			</div>
-  		</div>
-    </div>
-</div>
+            </b-col>
+        </b-row>  		
+    </b-container>
+
         
 </template>
 

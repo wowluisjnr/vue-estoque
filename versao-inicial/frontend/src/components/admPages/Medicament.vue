@@ -1,34 +1,43 @@
 <template>
     <b-card  title="Medicamentos" sub-title="Gerenciar Medicamentos">
         <b-form>
-            <!-- <input id="category-id" type="hidden" v-model="category.id" /> -->
-            <b-form-group label="Composição:" label-for="medicamento-name">
-                <b-form-input id="medicamento-name" type="text"                   
+            <input id="medicament-id" type="hidden" v-model="medicament.id" />
+            <b-form-group label="Composição:" label-for="medicamento-composition">
+                <b-form-input id="medicamento-composition" type="text" 
+                    v-model="medicament.composition" required                
                     placeholder="Informe a composição do Medicamento..." />
             </b-form-group>
             <b-form-group label="Unidade:" label-for="Medicamento-Unidade">
                 <b-form-select                    
-                    :options="unidades" />                
+                    :options="unidades" v-model="medicament.unity"/>                
             </b-form-group>
-            <b-button variant="primary" >Salvar</b-button>
-            <b-button variant="danger" class="ml-2" >Excluir</b-button>
-            <b-button class="ml-2" >Cancelar</b-button>
+            <b-form-group label="Estoque Minimo:" label-for="medicamento-minimumStock">
+                <b-form-input id="medicamento-minimumStock" type="number" 
+                    v-model="medicament.minimumStock" required                
+                    placeholder="Informe o estoque minimo para emissão de alerta..." />
+            </b-form-group>
+            <b-button variant="primary" @click="save">Salvar</b-button>
+            <!-- <b-button variant="danger" class="ml-2" >Excluir</b-button> -->
+            <b-button class="ml-2" @click="reset">Cancelar</b-button>
         </b-form>
         <hr>
-        <b-table hover striped :items="medicamentos" :fields="fields">
+        <b-table hover striped bordered small :items="medicaments" :fields="fields">
             <template slot="actions" slot-scope="data">
-                <b-button variant="warning" class="mr-2">
+                <b-button variant="warning" class="mr-2" @click="loadMedicament(data.item)">
                     <i class="fa fa-pencil"></i>
                 </b-button>
-                <b-button variant="danger" >
+                <!-- <b-button variant="danger" >
                     <i class="fa fa-trash"></i>
-                </b-button>
+                </b-button> -->
             </template>
         </b-table>
     </b-card>
 </template>
 
 <script>
+import axios from 'axios'
+import { baseApiUrl, showError } from '@/global'
+
 export default {
     name:'Medicament',
     data:function() {
@@ -39,21 +48,45 @@ export default {
                 {value: 'GTS', text: ' Gota - GTS'},
                 {value: 'AMP', text: 'Ampola - AMP'}
             ],
-            medicamentos:[
-                {id:1, name: 'Losartana 50mg', und: 'CP', minStock: 960},
-                {id:2, name: 'Losartana 25mg', und: 'CP', minStock: 1000},
-                {id:3, name: 'Anlodipino 5mg', und: 'CP', minStock: 500},
-                {id:4, name: 'Ibuprofeno', und: 'GTS', minStock: 40}
-            ],
+            medicaments:[],
+            medicament:{},
             fields: [
                 { key: 'id', label: 'Código', sortable: true },
-                { key: 'name', label: 'Medicamento', sortable: true },
-                { key: 'und', label: 'Unidade', sortable: true },
-                { key: 'minStock', label: 'Estoque Minimo'},
+                { key: 'composition', label: 'Medicamento', sortable: true },
+                { key: 'unity', label: 'Unidade', sortable: true },
+                { key: 'minimumStock', label: 'Estoque Minimo'},
                 { key: 'actions', label: 'Ações' }
             ]
         }
+    },
+    methods:{
+        loadMedicaments(){            
+            const url = `${baseApiUrl}/medicaments`
+            axios.get(url).then(res => {
+                this.medicaments=res.data                
+            })
+        },
+        loadMedicament(medicament){
+            this.medicament = {...medicament}            
+        },
+        reset(){
+            this.medicament = {}
+            this.loadMedicaments()
+        },
+        save(){
+            const method = this.medicament.id ? 'put' : 'post'
+            const id = this.medicament.id ? `/${this.medicament.id}` : ''
+            axios[method](`${baseApiUrl}/medicaments${id}`, this.medicament)
+                .then(()=>{
+                    this.$toasted.global.defaultSuccess()
+                    this.reset()
+                }).catch(showError)           
+        }
+    },
+    mounted(){
+        this.loadMedicaments()
     }
+    
 
 }
 </script>
