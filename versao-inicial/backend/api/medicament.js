@@ -33,7 +33,7 @@ module.exports = app =>{
     }
 
     const get = (req, res) => {
-        app.db('medicaments')
+        app.db('medicaments').orderBy('composition')
             .then( medicaments => res.json(medicaments))
             .catch(err => res.status(500).send(err))
     }

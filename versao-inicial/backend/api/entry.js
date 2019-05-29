@@ -16,7 +16,7 @@ module.exports = app =>{
         //quantidade do lote.
         const entry = { 
             loteId: req.body.loteId,
-            quantity: req.body.quantity,
+            quantity: req.body.plusQuantity ? req.body.plusQuantity : req.body.quantity,
             isEntry: true,
             movementDate: dateFormat(new Date()),
          }     
@@ -28,24 +28,38 @@ module.exports = app =>{
             medicamentId: req.body.medicamentId
         }   
 
-        //console.log("LOTE - ",lote)
-        //.log("ENTRY - ",entry)
+        console.log("LOTE - ",lote)
+        console.log("ENTRY - ",entry)
 
 
         if(req.params.loteId) lote.id = req.params.loteId
 
-        try {
+        try {            
+            existsOrError(lote.medicamentId, 'Medicamento não selecionado')
             existsOrError(lote.expirationDate, 'Data de validade não informada')
             existsOrError(lote.lotNumber, 'Numero do lote não informado')
-            existsOrError(lote.quantity, 'Quantidade não informada') 
-            existsOrError(lote.medicamentId, 'Medicamento não selecionado')  
+            existsOrError(lote.quantity, 'Quantidade não informada')   
             existsOrError(entry.movementDate, 'Problemas com a data da movimentação')         
         } catch(msg){
             res.status(400).send(msg)
         }
 
         if(lote.id){
-            console.log('Lote já existe! Deseja somar quantidade a este lote ', lote.id)
+            app.db.transaction( trx => {
+                app.db('lote').transacting(trx)
+                .update({ quantity: lote.quantity + entry.quantity })
+                .where({id: lote.id})
+                .then( () => app.db('movements')
+                        .transacting(trx)
+                        .insert({...entry, loteId: lote.id})
+                         )
+                .then(trx.commit)
+                .catch(trx.rollback)
+            })
+            .then(_ => res.status(204).send())
+            .catch(err => res.status(500).send(err))
+
+            //console.log('Lote já existe! Deseja somar quantidade a este lote ', lote.id)
         } else {
             app.db.transaction( trx => {
                 app.db('lote').transacting(trx)
@@ -85,6 +99,9 @@ module.exports = app =>{
     
     //ESSA
     //SELECT m.composition, m.unity, l."expirationDate", l.quantity FROM medicaments m LEFT JOIN lote l ON m.id = l."medicamentId" ;
+
+
+    //select m.composition, l.quantity, l."medicamentId" from medicaments m LEFT JOIN (select * from lote ll where quantity != 0)as l on l."medicamentId" = m.id;
 
 
     return { save, get }

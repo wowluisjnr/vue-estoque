@@ -11,6 +11,12 @@ module.exports = app =>{
         .post(app.api.entry.save)
         .get(app.api.entry.get)
 
+    app.route('/entries/:id')
+        .put(app.api.entry.save)
+
     app.route('/inventory')
         .get(app.api.inventory.get)
+
+    app.route('/lotes')
+        .get(app.api.inventory.getLotNumbers)
 }

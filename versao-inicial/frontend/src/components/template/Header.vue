@@ -13,6 +13,8 @@
                 <b-dropdown-item href="#">Gerenciar Usuarios</b-dropdown-item>
                 <b-dropdown-item href="/medicament">Cadastro de Medicamentos</b-dropdown-item>
                 <b-dropdown-item href="/movements">Relatorio de Movimentações</b-dropdown-item>
+                <b-dropdown-item href="#">Gerenciar Lotes</b-dropdown-item>
+                
                 </b-nav-item-dropdown>
                 <b-nav-item href="#">Novo Pedido</b-nav-item>
             </b-navbar-nav>

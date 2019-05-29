@@ -6,9 +6,14 @@
             <b-row>
                 <b-col md="6" sm="12">
                     <b-form-group label="Medicamento:" label-for="entry-name">
-                        <b-form-select id="entry-name" type="text"  :options="medicaments"                          
-                            v-model="entry.medicamentId"
-                            placeholder="Informe a Composição do Medicamento..." />
+                        
+                            <b-form-select id="entry-name" type="text"  
+                            :options="medicaments" 
+                             v-model="entry.medicamentId"   
+                             placeholder="Informe a Composição do Medicamento..."                        
+                            />                            
+                        <!-- </datalist> -->
+
                     </b-form-group>
                 </b-col>
                 <b-col md="6" sm="12">
@@ -21,9 +26,13 @@
             <b-row>
                 <b-col md="6" sm="12">
                     <b-form-group label="Numero do Lote:" label-for="entry-lote">
+                        <b-form-input list="my-list-id" v-model="entry.lotNumber"></b-form-input>
+                        <datalist id="my-list-id" placeholder="Informe o Lote do Medicamento..." >                            
+                            <option v-for="size in lotesNumber" :key="size.lotNumber">{{ size.lotNumber }}</option>
+                        </datalist><!-- 
                         <b-form-input id="entry-lote" type="text"                            
                             placeholder="Informe o Lote do Medicamento..." 
-                            v-model="entry.lotNumber"/>
+                            v-model="entry.lotNumber"/> -->
                     </b-form-group>
                 </b-col>
                 <b-col md="6" sm="12">
@@ -63,7 +72,7 @@
 </template>
 
 <script>
-import { baseApiUrl, dateFormat } from '@/global'
+import { baseApiUrl, dateFormat, showError } from '@/global'
 import axios from 'axios'
 
 export default {
@@ -71,7 +80,7 @@ export default {
     data:function(){
         return {
             inventory:[],
-            medicaments:[],
+            medicaments:[],            
             fields: [                
                 { key: 'composition', label: 'Medicamento', sortable: true },
                 { key: 'unity', label: 'Unidade', sortable: true },
@@ -80,21 +89,42 @@ export default {
                 //{ key: 'actions', label: 'Ações' }
             ],
             entry:{},
-            //lote:{},
+            lotesNumber:[],
             formShow: false
         }
     },
     methods: {
-        getInventory(){
+        loadInventory(){
             const url = `${baseApiUrl}/inventory`
             axios.get(url).then(res => {
+                
                 this.inventory = res.data.map(obj => {
+                    
+                    // if(!obj.quantity){
+                    //     t = array.findIndex((elem, j) =>{
+                    //         return i !== j && elem.medicamentId === obj.medicamentId && elem.quantity
+                    //     } )
+                    //     if(t < 0 ){
+                    //         this.inventory.push(obj)
+                    //     } 
+                    // } else {
+                    //     this.inventory.push(obj)
+                    // }  
+                    
+                    
                     if(!obj.quantity){
-                        obj ={...obj, _rowVariant: 'danger'}
+                        obj ={...obj, quantity:0 , _rowVariant: 'danger'}
+                    } else if(obj.quantity<obj.minimumStock){
+                        obj= {...obj, _rowVariant:'warning'}
                     }
                     return obj                    
                 })
-                res.data.map( medicament => {
+            })
+        },
+        loadMedicaments(){            
+            const url = `${baseApiUrl}/medicaments`
+            axios.get(url).then(res => {
+                res.data.map( medicament =>
                     this.medicaments.push({
                         id:medicament.id,
                         composition: medicament.composition,
@@ -102,24 +132,55 @@ export default {
                         value: medicament.id,
                         text: `${medicament.composition} - ${medicament.unity}`
                         
-                    })
-                })
+                    })    
+                )           
             })
+        },
+        loadLotes(){
+            const url =`${baseApiUrl}/lotes`
+            axios.get(url).then( res => {
+                this.lotesNumber = res.data
+            })
+
         },
         reset() {
             //this.mode = 'save'
             this.entry = {}
+            this.inventory =[]
+            this.medicaments = []
             this.changeFormShow()
-            this.getInventory()
+            this.loadInventory()
         },
         newEntry(){
-            const url = `${baseApiUrl}/entries`
-            this.entry.expirationDate = dateFormat(this.entry.expirationDate)
-            axios.post(url, this.entry)
+
+            const indexLoteExist = this.inventory.findIndex(obj => obj.lotNumber === this.entry.lotNumber)
+
+            const method = indexLoteExist >= 0 ? 'put' : 'post'
+            const id = indexLoteExist >= 0 ? `/${this.inventory[indexLoteExist].loteId}`:''
+            
+            if(indexLoteExist >= 0){
+                this.inventory[indexLoteExist].plusQuantity = parseInt(this.entry.quantity)                
+            }
+
+            if(this.entry.expirationDate) this.entry.expirationDate = dateFormat(this.entry.expirationDate)
+
+            axios[method](`${baseApiUrl}/entries${id}`, indexLoteExist >= 0 ?  this.inventory[indexLoteExist] : this.entry )
                 .then(()=>{
                     this.$toasted.global.defaultSuccess()
                     this.reset()
                 })
+                .catch(showError)
+            
+
+            //const url = `${baseApiUrl}/entries`
+
+            // if(this.entry.expirationDate) this.entry.expirationDate = dateFormat(this.entry.expirationDate)
+            // axios.post(url, this.entry)
+            //     .then(()=>{
+            //         this.$toasted.global.defaultSuccess()
+            //         this.reset()
+            //     })
+            //     .catch(showError)
         },
         rowClass(item){
             if(!item) return
@@ -130,7 +191,9 @@ export default {
         }
     },
     mounted(){
-        this.getInventory()
+        this.loadInventory()
+        this.loadMedicaments()
+        this.loadLotes()
     }
 
 }

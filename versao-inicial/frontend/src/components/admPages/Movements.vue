@@ -47,8 +47,7 @@ export default {
             fieldsShow:[
                 {key:'composition', label:'Medicamento', sortable:true},
                 {key:'expirationDate', label:'Data de validade', sortable:true},
-                {key:'quantity', label:'Quantidade', sortable:true},
-                {key:'row-details', label:'row'}
+                {key:'quantity', label:'Quantidade', sortable:true}
             ]
         }
     },
