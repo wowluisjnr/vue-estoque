@@ -16,7 +16,7 @@
                 <b-dropdown-item href="#">Gerenciar Lotes</b-dropdown-item>
                 
                 </b-nav-item-dropdown>
-                <b-nav-item href="#">Novo Pedido</b-nav-item>
+                <b-nav-item href="/neworder">Novo Pedido</b-nav-item>
             </b-navbar-nav>
 
             <!-- Right aligned nav items -->

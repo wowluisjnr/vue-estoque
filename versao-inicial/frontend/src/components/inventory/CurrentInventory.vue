@@ -100,18 +100,6 @@ export default {
                 
                 this.inventory = res.data.map(obj => {
                     
-                    // if(!obj.quantity){
-                    //     t = array.findIndex((elem, j) =>{
-                    //         return i !== j && elem.medicamentId === obj.medicamentId && elem.quantity
-                    //     } )
-                    //     if(t < 0 ){
-                    //         this.inventory.push(obj)
-                    //     } 
-                    // } else {
-                    //     this.inventory.push(obj)
-                    // }  
-                    
-                    
                     if(!obj.quantity){
                         obj ={...obj, quantity:0 , _rowVariant: 'danger'}
                     } else if(obj.quantity<obj.minimumStock){
@@ -144,43 +132,34 @@ export default {
 
         },
         reset() {
-            //this.mode = 'save'
             this.entry = {}
             this.inventory =[]
             this.medicaments = []
+            this.lotesNumber =[]
             this.changeFormShow()
+            this.loadMedicaments()
             this.loadInventory()
+            this.loadLotes()
         },
         newEntry(){
 
-            const indexLoteExist = this.inventory.findIndex(obj => obj.lotNumber === this.entry.lotNumber)
+            const indexLoteExist = this.lotesNumber.findIndex(obj => obj.lotNumber === this.entry.lotNumber)
 
             const method = indexLoteExist >= 0 ? 'put' : 'post'
-            const id = indexLoteExist >= 0 ? `/${this.inventory[indexLoteExist].loteId}`:''
+            const id = indexLoteExist >= 0 ? `/${this.lotesNumber[indexLoteExist].loteId}`:''
             
             if(indexLoteExist >= 0){
-                this.inventory[indexLoteExist].plusQuantity = parseInt(this.entry.quantity)                
+                this.lotesNumber[indexLoteExist].plusQuantity = parseInt(this.entry.quantity)                
             }
 
             if(this.entry.expirationDate) this.entry.expirationDate = dateFormat(this.entry.expirationDate)
 
-            axios[method](`${baseApiUrl}/entries${id}`, indexLoteExist >= 0 ?  this.inventory[indexLoteExist] : this.entry )
+            axios[method](`${baseApiUrl}/entries${id}`, indexLoteExist >= 0 ?  this.lotesNumber[indexLoteExist] : this.entry )
                 .then(()=>{
                     this.$toasted.global.defaultSuccess()
                     this.reset()
                 })
-                .catch(showError)
-            
-
-            //const url = `${baseApiUrl}/entries`
-
-            // if(this.entry.expirationDate) this.entry.expirationDate = dateFormat(this.entry.expirationDate)
-            // axios.post(url, this.entry)
-            //     .then(()=>{
-            //         this.$toasted.global.defaultSuccess()
-            //         this.reset()
-            //     })
-            //     .catch(showError)
+                .catch(showError)            
         },
         rowClass(item){
             if(!item) return

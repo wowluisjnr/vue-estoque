@@ -13,7 +13,7 @@ module.exports = app => {
     }
 
     const getLotNumbers = (req, res) =>{
-        app.db.select('id', 'lotNumber')
+        app.db.select('id as loteId','expirationDate', 'lotNumber', 'quantity', 'medicamentId')
             .from('lote')
             .then(lotNumber => res.json(lotNumber))
             .catch(err => res.status(500).send(err)) 

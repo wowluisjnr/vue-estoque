@@ -17,7 +17,7 @@ module.exports = app =>{
         const entry = { 
             loteId: req.body.loteId,
             quantity: req.body.plusQuantity ? req.body.plusQuantity : req.body.quantity,
-            isEntry: true,
+            
             movementDate: dateFormat(new Date()),
          }     
         const lote = {
@@ -28,8 +28,10 @@ module.exports = app =>{
             medicamentId: req.body.medicamentId
         }   
 
-        console.log("LOTE - ",lote)
-        console.log("ENTRY - ",entry)
+        entry.isEntry = parseInt(entry.quantity) < 0 ? false : true
+
+        //console.log("LOTE - ",lote)
+        //console.log("ENTRY - ",entry)
 
 
         if(req.params.loteId) lote.id = req.params.loteId
@@ -38,7 +40,7 @@ module.exports = app =>{
             existsOrError(lote.medicamentId, 'Medicamento não selecionado')
             existsOrError(lote.expirationDate, 'Data de validade não informada')
             existsOrError(lote.lotNumber, 'Numero do lote não informado')
-            existsOrError(lote.quantity, 'Quantidade não informada')   
+            existsOrError(entry.quantity, 'Quantidade não informada')   
             existsOrError(entry.movementDate, 'Problemas com a data da movimentação')         
         } catch(msg){
             res.status(400).send(msg)
