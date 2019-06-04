@@ -23,4 +23,8 @@ module.exports = app =>{
     app.route('/order')
         .post(app.api.listOrder.save)
         .get(app.api.listOrder.getAll)
+    
+    app.route('/order/:id')
+        //.post(app.api.listOrder.save)
+        .get(app.api.listOrder.getById)
 }

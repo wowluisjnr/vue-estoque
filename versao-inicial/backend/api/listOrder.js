@@ -38,9 +38,28 @@ module.exports = app => {
 
     const getAll = (req, res) =>{
         app.db('list_of_order').orderBy('orderDate')
-            .then( list_of_order => res.json(list_of_order))
+            .then( list_of_order => {
+                setTimeout(function(){ 
+                    res.json(list_of_order)
+                }, 3000);
+            })
             .catch(err => res.status(500).send(err))        
     }
 
-    return { save, getAll }
+    const getById = (req, res) =>{
+        let orders
+        app.db.select('orders.id', 'medicaments.composition','medicaments.unity', 'quantityOrder')
+            .from('orders')
+            .where({listId: req.params.id})
+            .innerJoin('medicaments', 'medicaments.id','orders.medicamentId')
+            .then( listOrder => orders = listOrder)
+            .catch(err => res.status(500).send(err))
+        app.db('list_of_order')
+            .where({id: req.params.id})
+            .then( list => res.json({orders,list}))
+            .catch(err => res.status(500).send(err))
+
+    }
+
+    return { save, getAll, getById }
 }
