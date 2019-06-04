@@ -1,5 +1,5 @@
 <template>
-    <b-card  title="Pedidos" sub-title="Novo Pedido">
+    <b-card  title="Novo Pedido de Medicamentos">
         <b-form @keyup.enter="addMedToList">
             <b-row>
                 <b-col md="8" sm="12">            
@@ -26,16 +26,73 @@
             <!-- <b-button class="ml-2" >Cancelar</b-button> -->
         </b-form>
         <hr>
-        <b-table hover striped bordered small :items="listMedicament" :fields="fields">
-            <template slot="actions" slot-scope="data">
-                <b-button size="sm" variant="warning" class="mr-2">
-                    <i class="fa fa-pencil"></i>
-                </b-button>
-                <b-button size="sm" variant="danger" >
-                    <i class="fa fa-trash" ></i>                    
-                </b-button>
-            </template>
-        </b-table>
+        <div>
+
+            <b-row>
+                <b-col md="6" class="my-1">
+                    <b-form-group label-cols-sm="3" label="Filtrar" class="mb-0">
+                        <b-input-group>
+                            <b-form-input v-model="filter" placeholder="Pesquisar"></b-form-input>
+                            <b-input-group-append>
+                            <b-button :disabled="!filter" @click="filter = ''">Limpar</b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+                <b-col md="6" class="my-1">
+                    <b-form-group label-cols-sm="3" label="Medicamentos por página" class="mb-0">
+                    <b-form-select v-model="perPage" :options="pageOptions"></b-form-select>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="6" class="my-1">
+                    <p class="m-0">Lista de Medicamentos</p>  
+                </b-col>
+                <b-col md="6" class="my-1">
+                    <div class="d-flex flex-row-reverse">
+                        <b-button :disabled="!listMedicament.length" size="sm" variant="success" v-b-modal.modal-1>Enviar Pedido</b-button> 
+                        <div>                            
+                            <b-modal id="modal-1" 
+                            ref="modal"
+                            title="Confirmar envio!"
+                            size="sm"
+                            okTitle= "Sim"
+                            cancelTitle ="Cancelar"
+                            footerClass="p-2"
+                            centered                             
+                            @ok="saveOrder"
+                            >
+                                <p class="my-4">Deseja enviar o pedido agora?</p>
+                            </b-modal>
+                        </div>
+                    </div>                   
+                </b-col>
+            </b-row>                     
+          
+
+            <b-table id="my-table" 
+                    hover striped bordered small 
+                    :items="listMedicament" 
+                    :fields="fields" 
+                    :per-page="perPage" 
+                    :filter="filter"
+                    :current-page="currentPage"
+                    @filtered="onFiltered" >                
+
+                <template slot="actions" slot-scope="data">
+                   
+                    <b-button size="sm" variant="danger"  @click="removeToItemList(data.item)" >
+                        <i class="fa fa-trash" ></i>                    
+                    </b-button>
+                </template>
+            </b-table>
+
+            <b-pagination v-if="listMedicament.length > perPage" v-model="currentPage"
+                :total-rows="rows" :per-page="perPage"
+                aria-controls="my-table"></b-pagination>
+           
+        </div>
     </b-card>
 </template>
 
@@ -48,6 +105,10 @@ export default {
     name: 'Order',
     data: function(){
         return {
+            perPage:10,
+            pageOptions:[3, 10, 15, 20],
+            currentPage: 1,
+            filter:'',
             medicament:{},
             medicaments: [],
             listMedicament:[],
@@ -57,6 +118,11 @@ export default {
                 { key: 'quantity', label: 'Quantidade', sortable:true},
                 { key: 'actions', label: 'Ações' }
             ]
+        }
+    },
+    computed:{
+        rows(){
+            return !this.filter ? this.listMedicament.length : this.totalRows
         }
     },
     methods:{
@@ -79,18 +145,52 @@ export default {
                 }                
                 return false
             })
-
-            if(!this.medicament.quantity){
-                this.$toasted.show("Quantidade não fornecida", { type:'error', icon:'times'})
-            }else if(!medicament[0]){   
+            if(!medicament[0]){   
                 this.$toasted.show("Medicamento informado não consta na lista", { type:'error', icon:'times'})
-            }else {                         
+            } else if(!this.medicament.quantity){
+                this.$toasted.show("Quantidade não fornecida", { type:'error', icon:'times'})
+            } else {                         
                 this.medicament = {...this.medicament, id: medicament[0].id, unity:medicament[0].unity}
                 this.listMedicament.push(this.medicament)
                 this.reset()
                 this.$toasted.global.defaultSuccess()
             }
-        }
+        },
+        removeToItemList(item){
+            this.medicaments.forEach(obj => {
+                if(item.id === obj.id) obj.disabled
+            })     
+            
+            this.listMedicament.splice(this.listMedicament.indexOf(item), 1)
+
+            this.$toasted.show(`${item.composition} foi removido da lista`, { type:'error', icon:'times'})
+                        
+            // this.$toasted.show(`${item.composition} foi removido da lista`, { type:'info', icon:'times',
+            //     action : {
+            //         text : 'Confirm',
+            //         onClick : (e, toastObject) => {
+            //             console.log(toastObject);
+            //             this.listMedicament.splice(this.listMedicament.indexOf(item), 1)
+            //         }
+            //     }
+            // })
+           
+        },        
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            
+            this.totalRows = filteredItems.length
+            this.currentPage = 1
+        },
+        saveOrder(){
+            axios.post(`${baseApiUrl}/order`, this.listMedicament)
+            .then(()=>{
+                    this.$toasted.global.defaultSuccess()
+                    //this.listMedicament.forEach(obj => this.removeToItemList(obj))
+                    this.reset()
+                })
+                .catch(showError)
+        }        
         
     },
     mounted(){

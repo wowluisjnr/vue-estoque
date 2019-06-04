@@ -19,4 +19,8 @@ module.exports = app =>{
 
     app.route('/lotes')
         .get(app.api.inventory.getLotNumbers)
+
+    app.route('/order')
+        .post(app.api.listOrder.save)
+        .get(app.api.listOrder.getAll)
 }
