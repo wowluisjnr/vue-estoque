@@ -12,16 +12,14 @@
                 <strong>Loading...</strong>
             </div>
             <template slot="actions" slot-scope="data">
-                
-                <b-button size="sm" variant="default"  >
-                    <i class="fa fa-eye" @click="viewOrder(data.item)"></i>                    
+                <a :href="'/ordersreceived/'+data.item.id">
+                <b-button size="sm" variant="info"  >
+                     <i class="fa fa-eye"></i>                  
                 </b-button>
+                </a>  
             </template>
         </b-table>
-        <div  class="text-center text-danger my-2">
-            <b-spinner label="Loading..."></b-spinner>
-            <strong>Loading...</strong>
-        </div>
+        
 
         <!-- <b-button @click="toggleBusy">Toggle Busy State</b-button>
 
@@ -36,7 +34,7 @@
 </template>
 
 <script>
-import { baseApiUrl, showError } from '@/global'
+import { baseApiUrl } from '@/global'
 import axios from 'axios'
 
 export default {
@@ -62,9 +60,6 @@ export default {
                 this.listsOfOrders = res.data 
             }).then( () => this.isBusy = false)
 
-        },
-        viewOrder(item){
-                        
         }
         
     },

@@ -7,6 +7,7 @@ import CurrentInventory from '@/components/inventory/CurrentInventory'
 import Movements from '@/components/admPages/Movements'
 import Order from '@/components/order/Order'
 import OrdersReceived from '@/components/order/OrdersReceived'
+import ListOfOrder from '@/components/order/ListOfOrders'
 
 
 Vue.use(VueRouter)
@@ -31,6 +32,10 @@ const routes = [{
     name:'ordersReceived',
     path:'/ordersreceived',
     component: OrdersReceived
+},{
+    name:'ListOfOrder',
+    path:'/ordersreceived/:id',
+    component: ListOfOrder
 }]
 
 const router = new VueRouter({

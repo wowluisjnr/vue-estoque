@@ -8,7 +8,7 @@
                         <b-form-input id="medicament" list="my-list-id" placeholder="Informe o Medicamento..." v-model="medicament.composition"></b-form-input>
                         <datalist id="my-list-id" >                            
                             <option v-for="med in medicaments" :key="med.id" 
-                            :value="med.composition" :disabled="med.disabled">{{ med.unity }}  </option>
+                            :value="med.composition" :disabled="med.disabled">{{ med.unity  }}  </option>
                         </datalist>
                     </b-form-group>
                 </b-col>
@@ -29,7 +29,7 @@
         <div>
 
             <b-row>
-                <b-col md="6" class="my-1">
+                <b-col md="5" class="my-1">
                     <b-form-group label-cols-sm="3" label="Filtrar" class="mb-0">
                         <b-input-group>
                             <b-form-input v-model="filter" placeholder="Pesquisar"></b-form-input>
@@ -39,7 +39,7 @@
                         </b-input-group>
                     </b-form-group>
                 </b-col>
-                <b-col md="6" class="my-1">
+                <b-col md="7" class="my-1">
                     <b-form-group label-cols-sm="3" label="Medicamentos por página" class="mb-0">
                     <b-form-select v-model="perPage" :options="pageOptions"></b-form-select>
                     </b-form-group>
@@ -51,24 +51,22 @@
                 </b-col>
                 <b-col md="6" class="my-1">
                     <div class="d-flex flex-row-reverse">
-                        <b-button :disabled="!listMedicament.length" size="sm" variant="success" v-b-modal.modal-1>Enviar Pedido</b-button> 
+                        <b-button :disabled="!listMedicament.length" size="sm" variant="success" @click="showMsgBoxTwo">Enviar Pedido</b-button> 
                         <div>                            
                             <b-modal id="modal-1" 
                             ref="modal"
-                            title="Confirmar envio!"
+                            title="Aguarde..."
                             size="sm"
-                            okTitle= "Sim"
-                            cancelTitle ="Cancelar"
+                            hide-footer                       
                             footerClass="p-2"
-                            centered                             
-                            @ok="saveOrder"
-                            >
-                                <p class="my-4">Deseja enviar o pedido agora?</p>
+                            centered >
+                                <b-spinner class="align-middle"></b-spinner>
+                                <strong>  Enviando pedido... </strong>                                
                             </b-modal>
                         </div>
                     </div>                   
                 </b-col>
-            </b-row>                     
+            </b-row>     
           
 
             <b-table id="my-table" 
@@ -158,39 +156,54 @@ export default {
         },
         removeToItemList(item){
             this.medicaments.forEach(obj => {
-                if(item.id === obj.id) obj.disabled
+                if(item.id === obj.id) obj.disabled = false
             })     
             
             this.listMedicament.splice(this.listMedicament.indexOf(item), 1)
-
-            this.$toasted.show(`${item.composition} foi removido da lista`, { type:'error', icon:'times'})
-                        
-            // this.$toasted.show(`${item.composition} foi removido da lista`, { type:'info', icon:'times',
-            //     action : {
-            //         text : 'Confirm',
-            //         onClick : (e, toastObject) => {
-            //             console.log(toastObject);
-            //             this.listMedicament.splice(this.listMedicament.indexOf(item), 1)
-            //         }
-            //     }
-            // })
+            
+            this.$toasted.show(`${item.composition} foi removido da lista`, { type:'error', icon:'times'})                 
            
         },        
         onFiltered(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
-            
+            // Trigger pagination to update the number of buttons/pages due to filtering            
             this.totalRows = filteredItems.length
             this.currentPage = 1
         },
         saveOrder(){
             axios.post(`${baseApiUrl}/order`, this.listMedicament)
             .then(()=>{
+                    //console.log(this.listMedicament)
+                    this.listMedicament = []
+                    this.medicaments.forEach( obj => obj.disabled = false)
+                    this.$bvModal.hide('modal-1')
                     this.$toasted.global.defaultSuccess()
-                    //this.listMedicament.forEach(obj => this.removeToItemList(obj))
                     this.reset()
                 })
                 .catch(showError)
-        }        
+        },
+        showMsgBoxTwo() {
+        this.$bvModal.msgBoxConfirm('Confirmar envio do pedido?', {
+          title: 'Confirmação',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Confirmar',
+          cancelTitle: 'Cancelar',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+          .then(value => {
+              if(value){
+                  this.$bvModal.show('modal-1')
+                  this.saveOrder()
+              }            
+          })
+          .catch(err => {
+            // An error occurred
+            this.$toasted.show(`Ocorreu um erro ao enviar o Pedido! Erro ${err}`, { type:'error', icon:'times'})
+          })
+      }       
         
     },
     mounted(){

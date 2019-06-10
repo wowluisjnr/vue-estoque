@@ -62,7 +62,11 @@
         </div>
 
         <b-table hover striped bordered :items="inventory" :fields="fields">
-            <!-- <template slot="actions" slot-scope="data">
+            <template slot="expirationDate" slot-scope="data">
+                {{ changeShowDate(data.item.expirationDate) }}                
+            </template>
+            
+            <!--<template slot="actions" slot-scope="data">
                 <b-button v-b-tooltip.hover title="Nova entrada" variant="primary" class="mr-2">
                     <i class="fa fa-plus"></i>
                 </b-button>
@@ -97,7 +101,7 @@ export default {
         loadInventory(){
             const url = `${baseApiUrl}/inventory`
             axios.get(url).then(res => {
-                
+
                 this.inventory = res.data.map(obj => {
                     
                     if(!obj.quantity){
@@ -152,7 +156,7 @@ export default {
                 this.lotesNumber[indexLoteExist].plusQuantity = parseInt(this.entry.quantity)                
             }
 
-            if(this.entry.expirationDate) this.entry.expirationDate = dateFormat(this.entry.expirationDate)
+            //if(this.entry.expirationDate) this.entry.expirationDate = dateFormat(this.entry.expirationDate)
 
             axios[method](`${baseApiUrl}/entries${id}`, indexLoteExist >= 0 ?  this.lotesNumber[indexLoteExist] : this.entry )
                 .then(()=>{
@@ -167,6 +171,9 @@ export default {
         },
         changeFormShow(){
             this.formShow = !this.formShow
+        },
+        changeShowDate(item){
+            return item ? dateFormat(item) : ''
         }
     },
     mounted(){
