@@ -54,7 +54,7 @@ export default {
                 { key: 'id', label: 'Código', sortable: true },
                 { key: 'composition', label: 'Medicamento', sortable: true },
                 { key: 'unity', label: 'Unidade', sortable: true },
-                { key: 'minimumStock', label: 'Estoque Minimo'},
+                { key: 'minimumStock', label: 'Estoque Minimo', sortable: true},
                 { key: 'actions', label: 'Ações' }
             ]
         }

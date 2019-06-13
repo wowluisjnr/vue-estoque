@@ -11,6 +11,9 @@
                 <b-spinner class="align-middle"></b-spinner>
                 <strong>Loading...</strong>
             </div>
+            <template slot="orderDate" slot-scope="data">
+                {{ changeShowDate(data.item.orderDate) }}
+            </template>
             <template slot="actions" slot-scope="data">
                 <a :href="'/ordersreceived/'+data.item.id">
                 <b-button size="sm" variant="info"  >
@@ -34,7 +37,7 @@
 </template>
 
 <script>
-import { baseApiUrl } from '@/global'
+import { baseApiUrl, dateFormat } from '@/global'
 import axios from 'axios'
 
 export default {
@@ -60,9 +63,13 @@ export default {
                 this.listsOfOrders = res.data 
             }).then( () => this.isBusy = false)
 
-        }
+        },
+        changeShowDate(item){
+            return item ? dateFormat(item) : ''
+        },
         
     },
+    
     mounted(){
         this.loadOrders()
     }

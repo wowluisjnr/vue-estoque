@@ -25,6 +25,6 @@ module.exports = app =>{
         .get(app.api.listOrder.getAll)
     
     app.route('/order/:id')
-        //.post(app.api.listOrder.save)
+        .post(app.api.listOrder.save)
         .get(app.api.listOrder.getById)
 }
