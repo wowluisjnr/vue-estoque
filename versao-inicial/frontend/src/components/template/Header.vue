@@ -10,7 +10,7 @@
             <b-navbar-nav>
                 <b-nav-item href="/">Estoque Atual</b-nav-item>  
 
-                <b-nav-item href="#">Nova Entrada</b-nav-item>                 
+                <!-- <b-nav-item href="/newentry">Nova Entrada</b-nav-item>                  -->
 
                 <b-nav-item-dropdown text="Gerenciar Pedidos" right>
                 <b-dropdown-item href="/neworder">Novo pedido</b-dropdown-item>

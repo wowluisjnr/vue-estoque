@@ -136,7 +136,7 @@ export default {
                             } 
                         }
                     })
-                    console.log(obj)
+                    //console.log(obj)
                     return obj
                 })
                 

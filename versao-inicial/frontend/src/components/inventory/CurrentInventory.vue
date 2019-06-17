@@ -61,7 +61,7 @@
             <button :disabled="formShow" type="button" class="btn btn-primary" @click="changeFormShow">Nova Entrada</button>
         </div>
 
-        <b-table hover striped bordered :items="inventory" :fields="fields">
+        <b-table hover striped bordered :items="inventoryOfMed" :fields="fields">
             <template slot="expirationDate" slot-scope="data">
                 {{ changeShowDate(data.item.expirationDate) }}                
             </template>
@@ -84,12 +84,13 @@ export default {
     data:function(){
         return {
             inventory:[],
+            inventoryOfMed:[],
             medicaments:[],            
             fields: [                
                 { key: 'composition', label: 'Medicamento', sortable: true },
                 { key: 'unity', label: 'Unidade', sortable: true },
-                { key: 'expirationDate', label: 'Data de validade', sortable:true},
-                { key: 'quantity', label: 'Quantidade', sortable:true},
+                //{ key: 'expirationDate', label: 'Data de validade', sortable:true},
+                { key: 'sumQuant', label: 'Quantidade', sortable:true},
                 //{ key: 'actions', label: 'Ações' }
             ],
             entry:{},
@@ -111,7 +112,36 @@ export default {
                     }
                     return obj                    
                 })
+
+                //console.log(res.data)
+
+                this.inventoryOfMed = this.inventory.filter((item, i, array) => {                    
+                    item.sumQuant = 0
+                    if(!item.dis)
+                    {
+                        array.map((obj)=> {
+                            if((obj.medicamentId == item.medicamentId)){
+                                item.sumQuant = item.sumQuant + obj.quantity
+                                obj.dis = true                                
+                            }
+                        })
+                        //const soma = item.sumQuant
+                        //item.quantity = soma
+                        if(item.sumQuant>0)
+                            item._rowVariant = item.sumQuant < item.minimumStock ? 'warning' : ''
+                        else{
+                            item._rowVariant = 'danger'
+                        }
+                        //item._rowVariant = item.sumQuant!==0 || 'danger'
+                        return item
+                    }
+                     
+                })
+                //console.log(this.inventoryOfMed)
+
             })
+
+
         },
         loadMedicaments(){            
             const url = `${baseApiUrl}/medicaments`

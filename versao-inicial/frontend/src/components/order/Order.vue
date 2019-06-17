@@ -104,7 +104,7 @@ export default {
     data: function(){
         return {
             perPage:10,
-            pageOptions:[3, 10, 15, 20],
+            pageOptions:[ 10, 15, 20],
             currentPage: 1,
             filter:'',
             medicament:{},

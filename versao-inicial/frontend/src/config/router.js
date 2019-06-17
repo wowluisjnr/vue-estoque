@@ -8,6 +8,7 @@ import Movements from '@/components/admPages/Movements'
 import Order from '@/components/order/Order'
 import OrdersReceived from '@/components/order/OrdersReceived'
 import ListOfOrder from '@/components/order/ListOfOrders'
+import NewEntry from '@/components/inventory/NewEntry'
 
 
 Vue.use(VueRouter)
@@ -36,6 +37,10 @@ const routes = [{
     name:'ListOfOrder',
     path:'/ordersreceived/:id',
     component: ListOfOrder
+},{
+    name:'NewEntry',
+    path:'/newentry',
+    component: NewEntry
 }]
 
 const router = new VueRouter({

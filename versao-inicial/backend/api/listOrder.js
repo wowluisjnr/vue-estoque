@@ -2,7 +2,6 @@ module.exports = app => {
     const save =  async (req, res) =>{
         let isFinish = null
         if(req.params.id ){
-            console.log("dentro do if")
             isFinish = await app.db('list_of_order').select('id', 'ubs')
                 .where({ id: req.params.id, status:'Entregue' }).first()
         }
@@ -17,6 +16,8 @@ module.exports = app => {
         }
 
         const orders = req.body    
+
+        console.log(orders)
 
         if(!req.params.id){
             app.db.transaction( trx => {
@@ -41,6 +42,8 @@ module.exports = app => {
             .then(_ => res.status(204).send())
             .catch(err => res.status(500).send('Ocorreu um erro, tente novamente ou contacte o suporte.'))
         } else if(!isFinish) {//if status entrege não fazer
+
+            console.log("OK isFinish")
 
             
 
@@ -101,7 +104,7 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))                          
             
         }
-        res.status(500).send(`Não é possivel atender O Pedido nº ${isFinish.id} para ${isFinish.ubs}, pois o mesmo já foi finalizado `)
+        //res.status(500).send(`Não é possivel atender O Pedido nº ${isFinish.id} para ${isFinish.ubs}, pois o mesmo já foi finalizado `)
     }   
 
     const getAll = (req, res) =>{
