@@ -103,8 +103,7 @@ export default {
             const url = `${baseApiUrl}/inventory`
             axios.get(url).then(res => {
 
-                this.inventory = res.data.map(obj => {
-                    
+                this.inventory = res.data.map(obj => {                    
                     if(!obj.quantity){
                         obj ={...obj, quantity:0 , _rowVariant: 'danger'}
                     } else if(obj.quantity<obj.minimumStock){
@@ -112,8 +111,6 @@ export default {
                     }
                     return obj                    
                 })
-
-                //console.log(res.data)
 
                 this.inventoryOfMed = this.inventory.filter((item, i, array) => {                    
                     item.sumQuant = 0
@@ -125,20 +122,14 @@ export default {
                                 obj.dis = true                                
                             }
                         })
-                        //const soma = item.sumQuant
-                        //item.quantity = soma
                         if(item.sumQuant>0)
                             item._rowVariant = item.sumQuant < item.minimumStock ? 'warning' : ''
                         else{
                             item._rowVariant = 'danger'
                         }
-                        //item._rowVariant = item.sumQuant!==0 || 'danger'
                         return item
-                    }
-                     
+                    }                     
                 })
-                //console.log(this.inventoryOfMed)
-
             })
 
 
@@ -148,12 +139,9 @@ export default {
             axios.get(url).then(res => {
                 res.data.map( medicament =>
                     this.medicaments.push({
-                        id:medicament.id,
-                        composition: medicament.composition,
-                        unity: medicament.unity,
+                        ...medicament,
                         value: medicament.id,
-                        text: `${medicament.composition} - ${medicament.unity}`
-                        
+                        text: `${medicament.composition} - ${medicament.unity}`                        
                     })    
                 )           
             })
