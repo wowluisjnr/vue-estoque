@@ -151,6 +151,7 @@ export default {
             // this.listOfOrdersTable.forEach(obj => {
             //     obj.quantitySuppliedTotal = soma()
             // })
+            this.showZero()
             axios.post(url, this.listOfOrdersTable)
             .then(()=>{
                     //console.log(this.listMedicament)

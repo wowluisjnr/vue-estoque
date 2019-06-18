@@ -17,8 +17,6 @@ module.exports = app => {
 
         const orders = req.body    
 
-        console.log(orders)
-
         if(!req.params.id){
             app.db.transaction( trx => {
                 app.db('list_of_order').transacting(trx)
@@ -104,7 +102,7 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))                          
             
         }
-        //res.status(500).send(`Não é possivel atender O Pedido nº ${isFinish.id} para ${isFinish.ubs}, pois o mesmo já foi finalizado `)
+        res.status(500).send(`Não é possivel atender O Pedido nº ${isFinish.id} para ${isFinish.ubs}, pois o mesmo já foi finalizado `)
     }   
 
     const getAll = (req, res) =>{

@@ -2,10 +2,16 @@ module.exports = app =>{
     app.route('/medicaments')
         .post(app.api.medicament.save)
         .get(app.api.medicament.get)
-    
+       
     app.route('/medicaments/:id')
         .put(app.api.medicament.save)
         .get(app.api.medicament.getById)
+
+    app.route('/movements')
+        .get(app.api.movement.get)
+    
+    app.route('/movements/:id')
+        .get(app.api.movement.getById)
 
     app.route('/entries')
         .post(app.api.entry.save)

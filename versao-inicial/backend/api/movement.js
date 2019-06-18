@@ -34,7 +34,11 @@ module.exports = app =>{
     }
 
     const get = (req, res) => {
-        app.db('movements')
+        app.db.select('movements.quantity', 'isEntry', 'movementDate', 'loteId', 'movements.id',
+         'medicaments.composition', 'medicaments.id as medicamentId', 'lote.expirationDate').from('movements')
+         .orderBy('movementDate', 'desc')
+        .leftJoin('lote', 'lote.id', 'movements.loteId')
+        .leftJoin('medicaments', 'medicaments.id', 'lote.medicamentId')
             .then( movements => res.json(movements))
             .catch(err => res.status(500).send(err))
     }
