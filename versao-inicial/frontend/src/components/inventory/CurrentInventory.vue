@@ -47,7 +47,7 @@
             <b-row>
                 <b-col xs="12">
                     <b-button variant="primary" @click="newEntry">Salvar</b-button>                    
-                    <b-button class="ml-2" @click="reset">Cancelar</b-button>
+                    <b-button class="ml-2" @click="reset(); changeFormShow();">Cancelar</b-button>
                 </b-col>
             </b-row>
             <hr>
@@ -158,7 +158,7 @@ export default {
             this.inventory =[]
             this.medicaments = []
             this.lotesNumber =[]
-            this.changeFormShow()
+            //this.changeFormShow()
             this.loadMedicaments()
             this.loadInventory()
             this.loadLotes()
@@ -171,7 +171,14 @@ export default {
             const id = indexLoteExist >= 0 ? `/${this.lotesNumber[indexLoteExist].loteId}`:''
             
             if(indexLoteExist >= 0){
-                this.lotesNumber[indexLoteExist].plusQuantity = parseInt(this.entry.quantity)                
+                this.lotesNumber[indexLoteExist].plusQuantity = parseInt(this.entry.quantity) //se quantity for 0???    
+                if(!parseInt(this.entry.quantity)){
+                    this.$toasted.show("Preencha o campo quantidade!!", { 
+                            type: "error", 
+                            icon: "times"
+                        });
+                    return
+                }           
             }
 
             //if(this.entry.expirationDate) this.entry.expirationDate = dateFormat(this.entry.expirationDate)

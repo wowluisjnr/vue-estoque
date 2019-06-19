@@ -1,5 +1,5 @@
 module.exports = app =>{
-    const { existsOrError } = app.api.validation
+    const { existsOrError, positiveNumberOrError } = app.api.validation
 
     const dateFormat = date => {
         const dia  = date.getDate().toString(),
@@ -16,8 +16,8 @@ module.exports = app =>{
         //quantidade do lote.
         const entry = { 
             loteId: req.body.loteId,
-            quantity: req.body.plusQuantity ? req.body.plusQuantity : req.body.quantity,
-            
+            quantity: req.body.plusQuantity ? parseInt(req.body.plusQuantity) : parseInt(req.body.quantity),
+            isEntry:true,
             movementDate: dateFormat(new Date()),
          }     
         const lote = {
@@ -28,20 +28,17 @@ module.exports = app =>{
             medicamentId: req.body.medicamentId
         }   
 
-        entry.isEntry = parseInt(entry.quantity) < 0 ? false : true
-
-        //console.log("LOTE - ",lote)
-        //console.log("ENTRY - ",entry)
-
-
         if(req.params.loteId) lote.id = req.params.loteId
+
+        console.log(entry, lote)
 
         try {            
             existsOrError(lote.medicamentId, 'Medicamento não selecionado')
             existsOrError(lote.expirationDate, 'Data de validade não informada')
             existsOrError(lote.lotNumber, 'Numero do lote não informado')
             existsOrError(entry.quantity, 'Quantidade não informada')   
-            existsOrError(entry.movementDate, 'Problemas com a data da movimentação')         
+            existsOrError(entry.movementDate, 'Problemas com a data da movimentação') 
+            positiveNumberOrError(entry.quantity, 'Quantidade não pode ser negativa')        
         } catch(msg){
             res.status(400).send(msg)
         }
