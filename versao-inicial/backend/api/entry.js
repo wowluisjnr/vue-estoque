@@ -30,7 +30,7 @@ module.exports = app =>{
 
         if(req.params.loteId) lote.id = req.params.loteId
 
-        console.log(entry, lote)
+        console.log(req.body)
 
         try {            
             existsOrError(lote.medicamentId, 'Medicamento não selecionado')

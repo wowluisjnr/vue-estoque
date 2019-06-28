@@ -173,7 +173,7 @@ export default {
             if(indexLoteExist >= 0){
                 this.lotesNumber[indexLoteExist].plusQuantity = parseInt(this.entry.quantity) //se quantity for 0???    
                 if(!parseInt(this.entry.quantity)){
-                    this.$toasted.show("Preencha o campo quantidade!!", { 
+                    this.$toasted.show("Quantidade não informada!!", { 
                             type: "error", 
                             icon: "times"
                         });
